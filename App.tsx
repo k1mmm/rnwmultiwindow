@@ -5,8 +5,7 @@
  * @format
  */
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
+import React, {useEffect} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -15,81 +14,75 @@ import {
   Text,
   useColorScheme,
   View,
+  NativeModules,
+  Button,
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
+function App({window = null}) {
+  return window === 'mainWindow' ? <MainPage /> : <SecondaryPage />;
 }
 
-function App(): React.JSX.Element {
+function SecondaryPage() {
   const isDarkMode = useColorScheme() === 'dark';
-
   const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+    backgroundColor: isDarkMode ? 'black' : 'white',
   };
 
+  useEffect(() => {
+    console.log('SecondaryPage Mount');
+
+    return () => {
+      console.log('SecondaryPage Unmount');
+    };
+  }, []);
+
   return (
-    <SafeAreaView style={backgroundStyle}>
+    <SafeAreaView>
       <StatusBar
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
+      <ScrollView contentInsetAdjustmentBehavior="automatic">
+        <View style={styles.content}>
+          <Text style={styles.title}>Secondary Window</Text>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+function MainPage() {
+  const isDarkMode = useColorScheme() === 'dark';
+  const backgroundStyle = {
+    backgroundColor: isDarkMode ? 'black' : 'white',
+  };
+
+  return (
+    <SafeAreaView>
+      <StatusBar
+        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+        backgroundColor={backgroundStyle.backgroundColor}
+      />
+      <ScrollView contentInsetAdjustmentBehavior="automatic">
+        <View style={styles.content}>
+          <Text style={styles.title}>App Window</Text>
+          <View style={[styles.section, backgroundStyle]}>
+            <Text
+              style={[
+                styles.sectionTitle,
+                {
+                  color: isDarkMode ? Colors.white : Colors.black,
+                },
+              ]}>
+              Multi-Window Example
+            </Text>
+            <Button
+              title="Open Secondary Window"
+              onPress={() => NativeModules.Native.OpenSecondaryWindow()}
+            />
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -97,21 +90,27 @@ function App(): React.JSX.Element {
 }
 
 const styles = StyleSheet.create({
+  title: {
+    fontSize: 30,
+    fontWeight: '600',
+  },
+  content: {
+    flex: 1,
+    padding: 25,
+  },
+  section: {
+    marginTop: 25,
+    padding: 25,
+    borderRadius: 10,
+  },
   sectionContainer: {
     marginTop: 32,
     paddingHorizontal: 24,
   },
   sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
     fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
+    marginBottom: 20,
+    fontWeight: '600',
   },
 });
 
