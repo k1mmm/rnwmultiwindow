@@ -21,11 +21,18 @@ import {
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 
 function App({window = null}) {
+  const colorScheme = useColorScheme();
+
+  useEffect(() => {
+    console.log('colorScheme', colorScheme);
+  }, [colorScheme]);
+
   return window === 'mainWindow' ? <MainPage /> : <SecondaryPage />;
 }
 
 function SecondaryPage() {
   const isDarkMode = useColorScheme() === 'dark';
+
   const backgroundStyle = {
     backgroundColor: isDarkMode ? 'black' : 'white',
   };
@@ -54,34 +61,23 @@ function SecondaryPage() {
 }
 
 function MainPage() {
-  const isDarkMode = useColorScheme() === 'dark';
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? 'black' : 'white',
-  };
+  const colorScheme = useColorScheme();
 
   return (
     <SafeAreaView>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
       <ScrollView contentInsetAdjustmentBehavior="automatic">
         <View style={styles.content}>
           <Text style={styles.title}>App Window</Text>
-          <View style={[styles.section, backgroundStyle]}>
-            <Text
-              style={[
-                styles.sectionTitle,
-                {
-                  color: isDarkMode ? Colors.white : Colors.black,
-                },
-              ]}>
-              Multi-Window Example
-            </Text>
+          <View style={styles.section}>
+            <Text style={[styles.sectionTitle]}>Multi-Window Example</Text>
             <Button
               title="Open Secondary Window"
               onPress={() => NativeModules.Native.OpenSecondaryWindow()}
             />
+          </View>
+          <View style={styles.section}>
+            <Text style={[styles.sectionTitle]}>Color Scheme</Text>
+            <Text>colorScheme: {colorScheme}</Text>
           </View>
         </View>
       </ScrollView>
